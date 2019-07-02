@@ -4,6 +4,7 @@ import { withTranslation } from 'react-i18next';
 import { withStyles } from '@material-ui/core/styles';
 import { withPlugins } from '../extend/withPlugins';
 import { Workspace } from '../components/Workspace';
+import * as actions from '../state/actions';
 import { getMaximizedWindowsIds, getWindowIds, getWorkspaceType } from '../state/selectors';
 
 /**
@@ -20,6 +21,11 @@ const mapStateToProps = state => (
     workspaceType: getWorkspaceType(state),
   }
 );
+
+/** */
+const mapDispatchToProps = {
+  addWindow: actions.addWindow,
+};
 
 /**
  * @param theme
@@ -39,7 +45,7 @@ const styles = theme => ({
 const enhance = compose(
   withTranslation(),
   withStyles(styles),
-  connect(mapStateToProps),
+  connect(mapStateToProps, mapDispatchToProps),
   withPlugins('Workspace'),
   // further HOC go here
 );

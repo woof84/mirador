@@ -7,6 +7,7 @@ import Window from '../containers/Window';
 import WorkspaceMosaic from '../containers/WorkspaceMosaic';
 import WorkspaceElastic from '../containers/WorkspaceElastic';
 import ns from '../config/css-ns';
+import DragNDrop from './DragNDrop';
 
 /**
  * Represents a work area that contains any number of windows
@@ -90,7 +91,9 @@ export class Workspace extends React.Component {
    * render
    */
   render() {
-    const { classes, isWorkspaceControlPanelVisible, t } = this.props;
+    const {
+      classes, isWorkspaceControlPanelVisible, t,
+    } = this.props;
 
     return (
       <div
@@ -103,7 +106,9 @@ export class Workspace extends React.Component {
         }
       >
         <Typography variant="srOnly" component="h1">{t('miradorViewer')}</Typography>
-        {this.workspaceByType()}
+        <DragNDrop>
+          {this.workspaceByType()}
+        </DragNDrop>
       </div>
     );
   }
