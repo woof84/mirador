@@ -99,6 +99,7 @@ export class OpenSeadragonViewer extends Component {
   componentDidUpdate(prevProps) {
     const {
       viewer,
+      canvasWorld,
       highlightedAnnotations, selectedAnnotations,
       searchAnnotations, selectedContentSearchAnnotations,
     } = this.props;
@@ -129,6 +130,8 @@ export class OpenSeadragonViewer extends Component {
     if (!this.tileSourcesMatch(prevProps.tileSources)) {
       this.viewer.close();
       this.addAllTileSources();
+    } else if (canvasWorld.layers !== prevProps.canvasWorld.layers) {
+      this.refreshTileProperties();
     } else if (viewer && !this.osdUpdating) {
       const { viewport } = this.viewer;
 
@@ -224,11 +227,30 @@ export class OpenSeadragonViewer extends Component {
       this.viewer.addTiledImage({
         error: event => reject(event),
         fitBounds: new OpenSeadragon.Rect(
-          ...canvasWorld.canvasToWorldCoordinates(i),
+          ...canvasWorld.canvasToWorldCoordinates(tileSource),
         ),
+        index: canvasWorld.layerIndexOfImageResource(tileSource),
+        opacity: canvasWorld.layerOpacityOfImageResource(tileSource),
         success: event => resolve(event),
         tileSource,
       });
+    });
+  }
+
+  /** */
+  refreshTileProperties() {
+    const { canvasWorld } = this.props;
+    const { world } = this.viewer;
+
+    const items = [];
+    for (let i = 0; i < world.getItemCount(); i += 1) {
+      items.push(world.getItemAt(i));
+    }
+
+    items.forEach((item, i) => {
+      const newIndex = canvasWorld.layerIndexOfImageResource(item.source);
+      if (i !== newIndex) world.setItemIndex(item, newIndex);
+      item.setOpacity(canvasWorld.layerOpacityOfImageResource(item.source));
     });
   }
 
